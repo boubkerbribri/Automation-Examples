@@ -1,0 +1,52 @@
+name: Playwright all in one
+
+on:
+  push: 
+    paths: 
+      - 'playwright-all-in-one/**'
+      - '.github/workflows/playwright-all-in-one.yml'
+
+env:
+  NODE_VERSION: '20'
+  WORKING_DIECTORY: 'playwright-all-in-one'
+    
+jobs:
+  test:
+    name: 'Test Playwright all in one'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+          cache-dependency-path: '${{ env.WORKING_DIECTORY }}/yarn.lock'
+            
+      - name: Install dependencies
+        working-directory: ${{ env.WORKING_DIECTORY }}
+        run: yarn
+
+      - name: Check types
+        working-directory: ${{ env.WORKING_DIECTORY }}
+        run: npx tsc
+            
+      - name: Install Browsers
+        working-directory: ${{ env.WORKING_DIECTORY }}
+        run: npx playwright install --with-deps
+
+      - name: Run tests
+        id: runTests
+        working-directory: ${{ env.WORKING_DIECTORY }}
+        run: yarn test
+        env:
+          HEADLESS: true
+            
+      - name: Upload Reports
+        uses: actions/upload-artifact@v4
+        if: failure() && steps.runTests.outcome == 'failure'
+        with:
+          name: Reports
+          path: |
+            ${{ env.WORKING_DIECTORY }}/playwright-report
+            ${{ env.WORKING_DIECTORY }}/test-results
