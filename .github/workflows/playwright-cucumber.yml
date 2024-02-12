@@ -1,18 +1,18 @@
-name: Playwright all in one
+name: Playwright with Cucumber
 
 on:
   push: 
     paths: 
-      - 'playwright-all-in-one/**'
-      - '.github/workflows/playwright-all-in-one.yml'
+      - 'playwright-cucumber/**'
+      - '.github/workflows/playwright-cucumber.yml'
 
 env:
   NODE_VERSION: '20'
-  WORKING_DIECTORY: 'playwright-all-in-one'
+  WORKING_DIECTORY: 'playwright-cucumber'
     
 jobs:
   test:
-    name: 'Test Playwright all in one'
+    name: 'Test Playwright with Cucumber'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,5 +52,4 @@ jobs:
         with:
           name: Reports
           path: |
-            ${{ env.WORKING_DIECTORY }}/playwright-report
             ${{ env.WORKING_DIECTORY }}/test-results

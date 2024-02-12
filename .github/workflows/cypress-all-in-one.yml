@@ -1,0 +1,31 @@
+name: Cypress all in one
+
+on:
+  push: 
+    paths: 
+      - 'cypress-all-in-one/**'
+      - '.github/workflows/cypress-all-in-one.yml'
+
+env:
+  WORKING_DIECTORY: 'cypress-all-in-one'
+    
+jobs:
+  test:
+    name: 'Test cypress all in one'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: cypress-io/github-action@v6
+        id: runTests
+        with:
+          working-directory: ${{ env.WORKING_DIECTORY }}
+          browser: 'chrome'
+            
+      - name: Upload Reports
+        uses: actions/upload-artifact@v4
+        if: failure() && steps.runTests.outcome == 'failure'
+        with:
+          name: Reports
+          path: |
+            ${{ env.WORKING_DIECTORY }}/test-results
